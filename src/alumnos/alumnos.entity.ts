@@ -5,8 +5,10 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { Grupo } from 'src/grupos/grupos.entity';
+import { AlumnoUsuarioPadre } from 'src/alumnos_padres/alumnos_padres.entity';
 
 @Entity('alumnos')
 export class Alumno {
@@ -38,12 +40,6 @@ export class Alumno {
   fecha_inscripcion: Date;
 
   @Column({ type: 'tinyint', nullable: true })
-  grado: number;
-
-  @Column({ type: 'varchar', length: 5, nullable: true })
-  grupo: string;
-
-  @Column({ type: 'tinyint', nullable: true })
   egreso: number;
 
   @Column({ type: 'datetime', nullable: true })
@@ -55,8 +51,14 @@ export class Alumno {
   @Column({ type: 'datetime', nullable: true })
   fecha_baja: Date;
 
-  @ManyToOne(() => Grupo, (grupo) => grupo.id_grupo, { nullable: true })
-  grupo_id: Grupo;
+  @ManyToOne(() => Grupo, (grupo) => grupo.alumnos, { nullable: true })
+  grupo: Grupo;
+
+  @OneToMany(
+    () => AlumnoUsuarioPadre,
+    (alumnoUsuarioPadre) => alumnoUsuarioPadre.alumno,
+  )
+  alumnoUsuarioPadres: AlumnoUsuarioPadre[];
 
   @CreateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   fecha_creacion: Date;

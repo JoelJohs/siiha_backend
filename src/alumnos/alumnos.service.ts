@@ -12,18 +12,50 @@ export class AlumnosService {
     @InjectRepository(Alumno) private alumnoRepository: Repository<Alumno>,
   ) {}
 
+  //** Create Alumno **//
+
   createAlumno(alumno: CreateAlumnoDto): Promise<Alumno> {
     const newAlumno = this.alumnoRepository.create(alumno);
     return this.alumnoRepository.save(newAlumno);
   }
 
+  //** Get Alumnos **//
+
+  // URL: http://localhost:3000/alumnos
   getAlumnos() {
     return this.alumnoRepository.find();
   }
 
+  // URL: http://localhost:3000/alumnos/1
   getAlumno(id: number) {
     return this.alumnoRepository.findOne({
       where: { id },
     });
+  }
+
+  getAlumnoWithPadre() {
+    return this.alumnoRepository.find({
+      relations: [
+        'alumnoUsuarioPadres',
+        'alumnoUsuarioPadres.usuario_padre',
+        'alumnoUsuarioPadres.usuario_padre.padre_tutor',
+      ],
+    });
+  }
+
+  getAlumnosWithDetails(): Promise<Alumno[]> {
+    return this.alumnoRepository.find({
+      relations: [
+        'alumnoUsuarioPadres',
+        'alumnoUsuarioPadres.usuario_padre',
+        'alumnoUsuarioPadres.usuario_padre.padre_tutor',
+      ],
+    });
+  }
+
+  //** Delete Alumno **/
+
+  deleteAlumno(id: number) {
+    return this.alumnoRepository.delete({ id });
   }
 }

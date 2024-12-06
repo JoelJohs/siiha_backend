@@ -5,8 +5,10 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { UsuarioDocente } from 'src/usuario_docente/usuario_docente.entity';
+import { Alumno } from 'src/alumnos/alumnos.entity';
 
 @Entity('grupos')
 export class Grupo {
@@ -23,4 +25,7 @@ export class Grupo {
     nullable: true,
   })
   usuario_docente: UsuarioDocente;
+
+  @OneToMany(() => Alumno, (alumno) => alumno.grupo)
+  alumnos: Alumno[];
 }

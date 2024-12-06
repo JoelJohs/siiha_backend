@@ -11,9 +11,15 @@ export class AlumnoUsuarioPadre {
   @PrimaryColumn()
   usuario_padre_id: number;
 
-  @ManyToOne(() => Alumno, { nullable: false })
+  @ManyToOne(() => Alumno, (alumno) => alumno.alumnoUsuarioPadres, {
+    nullable: false,
+  })
   alumno: Alumno;
 
-  @ManyToOne(() => UsuarioPadre, { nullable: false })
+  @ManyToOne(
+    () => UsuarioPadre,
+    (usuarioPadre) => usuarioPadre.alumnoUsuarioPadres,
+    { nullable: false },
+  )
   usuario_padre: UsuarioPadre;
 }

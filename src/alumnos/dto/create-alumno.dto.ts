@@ -9,8 +9,6 @@ export class CreateAlumnoDto {
   historial_medico?: string;
   datos_seguro_social?: string;
   fecha_inscripcion?: Date;
-  grado?: number;
-  grupo?: string;
   egreso?: number;
   fecha_egreso?: Date;
   baja?: number;
