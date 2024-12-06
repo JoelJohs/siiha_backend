@@ -19,4 +19,18 @@ export class PagosService {
   getPagos() {
     return this.pagoRepository.find();
   }
+
+  getPagoByTutorId(tutorId: number) {
+    return this.pagoRepository.find({
+      where: { tutorHasPagos: { usuario_padre: { id_usuario_padre: tutorId } } },
+      relations: ['tutorHasPagos', 'tutorHasPagos.usuario_padre'],
+    });
+  }
+
+  getAllPagosWithDetails(){
+    return this.pagoRepository.find({
+      relations: ['tutorHasPagos', 'tutorHasPagos.usuario_padre', 'tutorHasPagos.usuario_padre.padre_tutor'],
+    })
+  }
+
 }

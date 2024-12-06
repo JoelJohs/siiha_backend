@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { PadreTutor } from 'src/padre_tutor/padre_tutor.entity';
 import { AlumnoUsuarioPadre } from 'src/alumnos_padres/alumnos_padres.entity';
+import { PadreTutorHasPagos } from 'src/padre_tutor_has_pagos/padre_tutor_has_pagos.entity';
 
 @Entity('usuarios_padres')
 export class UsuarioPadre {
@@ -35,6 +36,12 @@ export class UsuarioPadre {
     (alumnoUsuarioPadre) => alumnoUsuarioPadre.usuario_padre,
   )
   alumnoUsuarioPadres: AlumnoUsuarioPadre[];
+
+  @OneToMany(
+    () => PadreTutorHasPagos,
+    (tutorHasPagos) => tutorHasPagos.usuario_padre,
+  )
+  tutorHasPagos: PadreTutorHasPagos[];
 
   @CreateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   fecha_creacion: Date;

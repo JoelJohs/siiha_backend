@@ -20,4 +20,10 @@ export class AlumnosService {
   getAlumnos() {
     return this.alumnoRepository.find();
   }
+
+  getAlumno(id: number) {
+    return this.alumnoRepository.findOne({
+      where: { id },
+    });
+  }
 }

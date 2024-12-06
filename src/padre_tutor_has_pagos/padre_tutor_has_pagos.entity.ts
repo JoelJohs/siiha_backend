@@ -11,10 +11,12 @@ export class PadreTutorHasPagos {
   @PrimaryColumn()
   pagos_id_pago: number;
 
-  @ManyToOne(() => UsuarioPadre, { nullable: false })
+  @ManyToOne(() => UsuarioPadre, (usuarioPadre) => usuarioPadre.tutorHasPagos, {
+    nullable: false,
+  })
   usuario_padre: UsuarioPadre;
 
-  @ManyToOne(() => Pago, { nullable: false })
+  @ManyToOne(() => Pago, (pago) => pago.tutorHasPagos, { nullable: false })
   pago: Pago;
 
   @Column({ type: 'tinyint', nullable: true })
