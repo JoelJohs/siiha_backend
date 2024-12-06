@@ -1,5 +1,4 @@
 /* eslint-disable prettier/prettier */
-
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,7 +6,6 @@ import {
   CreateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { PadreTutor } from 'src/padre_tutor/padre_tutor.entity';
 import { Grupo } from 'src/grupos/grupos.entity';
 
 @Entity('alumnos')
@@ -56,11 +54,6 @@ export class Alumno {
 
   @Column({ type: 'datetime', nullable: true })
   fecha_baja: Date;
-
-  @ManyToOne(() => PadreTutor, (padreTutor) => padreTutor.id_padre_tutor, {
-    nullable: false,
-  })
-  padre_tutor: PadreTutor;
 
   @ManyToOne(() => Grupo, (grupo) => grupo.id_grupo, { nullable: true })
   grupo_id: Grupo;

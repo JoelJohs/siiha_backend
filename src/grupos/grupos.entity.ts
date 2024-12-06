@@ -6,7 +6,7 @@ import {
   CreateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { Docente } from 'src/docentes/docentes.entity';
+import { UsuarioDocente } from 'src/usuario_docente/usuario_docente.entity';
 
 @Entity('grupos')
 export class Grupo {
@@ -19,6 +19,8 @@ export class Grupo {
   @CreateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   fecha_creacion: Date;
 
-  @ManyToOne(() => Docente, { nullable: true })
-  docente: Docente;
+  @ManyToOne(() => UsuarioDocente, (usuarioDocente) => usuarioDocente.grupos, {
+    nullable: true,
+  })
+  usuario_docente: UsuarioDocente;
 }

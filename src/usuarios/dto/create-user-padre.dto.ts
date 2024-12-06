@@ -5,4 +5,5 @@ export class CreateUsuarioPadreDto {
   contrasena?: string;
   email?: string;
   padre_tutor_id?: number;
+  rol?: string = 'T';
 }

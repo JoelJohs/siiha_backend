@@ -8,6 +8,10 @@ import { AlumnosModule } from './alumnos/alumnos.module';
 import { GruposModule } from './grupos/grupos.module';
 import { DocentesModule } from './docentes/docentes.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
+import { PagosModule } from './pagos/pagos.module';
+import { UsuarioDocenteModule } from './usuario_docente/usuario_docente.module';
+import { PadreTutorHasPagosModule } from './padre_tutor_has_pagos/padre_tutor_has_pagos.module';
+import { AlumnosPadresModule } from './alumnos_padres/alumnos_padres.module';
 
 @Module({
   imports: [
@@ -26,6 +30,10 @@ import { UsuariosModule } from './usuarios/usuarios.module';
     GruposModule,
     DocentesModule,
     UsuariosModule,
+    PagosModule,
+    UsuarioDocenteModule,
+    PadreTutorHasPagosModule,
+    AlumnosPadresModule,
   ],
   controllers: [AppController],
   providers: [AppService],
