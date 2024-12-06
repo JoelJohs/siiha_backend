@@ -12,18 +12,24 @@ import { PagosModule } from './pagos/pagos.module';
 import { UsuarioDocenteModule } from './usuario_docente/usuario_docente.module';
 import { PadreTutorHasPagosModule } from './padre_tutor_has_pagos/padre_tutor_has_pagos.module';
 import { AlumnosPadresModule } from './alumnos_padres/alumnos_padres.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '',
-      database: 'siiha_db',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('DB_HOST'),
+        port: parseInt(configService.get<string>('DB_PORT'), 10),
+        username: configService.get<string>('DB_USERNAME'),
+        password: '',
+        database: configService.get<string>('DB_DATABASE'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: true, // **¡Usa synchronize: false en producción!**
+      }),
+      inject: [ConfigService],
     }),
     PadreTutorModule,
     AlumnosModule,
