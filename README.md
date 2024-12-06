@@ -1,17 +1,11 @@
 # SIIHA Backend
 
 <p align="center">
-  <a href="http://nestjs.com/" target="_blank">
-    <img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" />
-  </a>
+    <img src="./public/logo.png" width="120" alt="Logo SIIHA" />
 </p>
 
 <p align="center">
   <strong>Sistema Integral de Información y Administración Escolar Backend</strong>
-</p>
-
-<p align="center">
-  Un framework progresivo de <a href="http://nodejs.org" target="_blank">Node.js</a> para construir aplicaciones del lado del servidor eficientes y escalables.
 </p>
 
 ## 🛠️ Características
@@ -50,11 +44,11 @@ npm install
 
 ### 3. Configurar las Variables de Entorno
 
-Crea un archivo 
+Crea un archivo
 
 .env
 
- en la raíz del proyecto y añade la siguiente configuración:
+en la raíz del proyecto y añade la siguiente configuración:
 
 ```env
 DB_HOST=localhost
