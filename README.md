@@ -13,7 +13,6 @@
 - **Gestión de Alumnos y Padres de Familia:** Manejo completo de la información de los alumnos y sus respectivos padres o tutores.
 - **Administración de Grupos:** Asignación de docentes a grupos y gestión de los alumnos pertenecientes a cada grupo.
 - **Control de Pagos:** Registro y seguimiento de los pagos realizados por los padres de familia.
-- **Relaciones Complejas:** Uso de tablas intermedias para manejar relaciones muchos a muchos entre alumnos y padres.
 - **Validación y Manejo de Errores:** Implementación de validaciones robustas para garantizar la integridad de los datos.
 - **Configuración por Variables de Entorno:** Seguridad en la gestión de credenciales y configuraciones sensibles.
 
@@ -44,11 +43,7 @@ npm install
 
 ### 3. Configurar las Variables de Entorno
 
-Crea un archivo
-
-.env
-
-en la raíz del proyecto y añade la siguiente configuración:
+Crea un archivo `.env` en la raíz del proyecto y añade la siguiente configuración:
 
 ```env
 DB_HOST=localhost
@@ -62,13 +57,65 @@ DB_DATABASE=siiha_db
 
 ### 4. Configurar la Base de Datos
 
-Asegúrate de tener una base de datos MySQL creada con el nombre especificado en `DB_DATABASE` (`siiha_db`).
+1. Asegúrate de tener MySQL instalado y funcionando.
+2. Crea la base de datos especificada en `DB_DATABASE` sin ninguna tabla:
 
 ```sql
 CREATE DATABASE siiha_db;
 ```
 
-> **Nota:** Si `synchronize` está habilitado en la configuración de TypeORM, las tablas se crearán automáticamente al iniciar la aplicación.
+3. Al iniciar la aplicación, TypeORM sincronizará automáticamente las tablas basadas en las entidades definidas.
+
+### 5. Configuración de la Conexión en `app.module.ts`
+
+En el entorno local, si tu MySQL no tiene contraseña, la configuración será la siguiente:
+
+```typescript
+TypeOrmModule.forRootAsync({
+  imports: [ConfigModule],
+  useFactory: async (configService: ConfigService) => ({
+    type: 'mysql',
+    host: configService.get<string>('DB_HOST'),
+    port: parseInt(configService.get<string>('DB_PORT'), 10),
+    username: configService.get<string>('DB_USERNAME'),
+    password: '',
+    database: configService.get<string>('DB_DATABASE'),
+    entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    synchronize: true, // ¡Usa synchronize: false en producción!
+  }),
+  inject: [ConfigService],
+});
+```
+
+Si tu MySQL requiere contraseña, edita el archivo `.env` para incluirla y ajusta la configuración de `password`:
+
+```env
+DB_PASSWORD=tu_password
+```
+
+Y cambia la configuración en `app.module.ts` a:
+
+```typescript
+password: configService.get<string>('DB_PASSWORD'),
+```
+
+## ⚙️ Migración de Tablas
+
+Para garantizar un formato consistente de la base de datos en diferentes entornos, habilita la opción `synchronize: true` solo en entornos de desarrollo. En producción, utiliza migraciones.
+
+1. Generar una migración basada en las entidades:
+
+```bash
+npm run typeorm migration:generate -- -n InitialMigration
+```
+
+2. Ejecutar las migraciones:
+
+```bash
+npm run typeorm migration:run
+```
+
+> **Nota:** Cambia `synchronize` a `false` en producción para evitar modificaciones no controladas en la base de datos.
 
 ## ⚙️ Ejecución
 
@@ -94,69 +141,7 @@ npm run start:prod
 
 ## 🧪 Pruebas
 
-### Pruebas con Postman
-
-Se realizaron pruebas utilizando [Postman](https://www.postman.com/) para verificar el correcto funcionamiento de los endpoints. A continuación, se detallan algunos de los endpoints probados:
-
-#### 1. **Crear un Alumno**
-
-- **URL:** `POST http://localhost:3000/alumnos`
-- **Body:**
-
-```json
-{
-  "nombres": "Luis",
-  "apellido_paterno": "Ramírez",
-  "apellido_materno": "García",
-  "curp": "LIRM850303HDFRNN05",
-  "cartilla_vacunacion": "path/to/cartilla_vacunacion.pdf",
-  "historial_medico": "path/to/historial_medico.pdf",
-  "datos_seguro_social": "path/to/datos_seguro_social.pdf",
-  "fecha_inscripcion": "2024-09-01T08:00:00",
-  "egreso": 0,
-  "fecha_egreso": null,
-  "baja": 0,
-  "fecha_baja": null,
-  "grupoIdGrupo": 1,
-  "padreTutorIdPadreTutor": 1
-}
-```
-
-#### 2. **Crear una Relación entre Alumno y Padre**
-
-- **URL:** `POST http://localhost:3000/alumnos-padres`
-- **Body:**
-
-```json
-{
-  "alumnoId": 1,
-  "usuarioPadreId": 1
-}
-```
-
-#### 3. **Obtener Todos los Alumnos**
-
-- **URL:** `GET http://localhost:3000/alumnos`
-
-#### 4. **Obtener Alumnos con Padres**
-
-- **URL:** `GET http://localhost:3000/alumnos/padres`
-
-#### 5. **Obtener Detalles de Alumnos**
-
-- **URL:** `GET http://localhost:3000/alumnos/details`
-
-#### 6. **Obtener un Alumno por ID**
-
-- **URL:** `GET http://localhost:3000/alumnos/1`
-
-#### 7. **Eliminar un Alumno**
-
-- **URL:** `POST http://localhost:3000/alumnos/delete/1`
-
-### Importar Colección de Postman
-
-Puedes importar una colección de Postman preconfigurada aquí.
+Utiliza [Postman](https://www.postman.com/) para probar los endpoints del backend. Puedes importar una colección preconfigurada disponible en el repositorio.
 
 ## 📂 Estructura del Proyecto
 
@@ -167,28 +152,16 @@ siiha_backend/
 │   │   ├── alumnos.controller.ts
 │   │   ├── alumnos.service.ts
 │   │   └── alumnos.entity.ts
-│   ├── alumnos_padres/
-│   │   ├── alumnos_padres.controller.ts
-│   │   ├── alumnos_padres.service.ts
-│   │   └── alumnos_padres.entity.ts
-│   ├── padre_tutor/
-│   │   ├── padre_tutor.entity.ts
-│   │   └── padre_tutor.module.ts
-│   ├── usuario_docente/
-│   │   ├── usuario_docente.entity.ts
-│   │   └── usuario_docente.module.ts
-│   ├── pagos/
-│   │   ├── pagos.controller.ts
-│   │   ├── pagos.service.ts
-│   │   └── pagos.entity.ts
+│   ├── padres_tutores/
+│   │   ├── padres_tutores.controller.ts
+│   │   ├── padres_tutores.service.ts
+│   │   └── padres_tutores.entity.ts
 │   ├── grupos/
 │   │   ├── grupos.controller.ts
 │   │   ├── grupos.service.ts
 │   │   └── grupos.entity.ts
 │   ├── app.module.ts
 │   └── main.ts
-├── test/
-│   └── ... Tests
 ├── .env
 ├── .gitignore
 ├── package.json
@@ -213,5 +186,3 @@ Este proyecto está bajo la Licencia MIT. Consulta el archivo LICENSE para más 
 ## 📞 Contacto
 
 Si tienes alguna pregunta o sugerencia, por favor abre un [Ticket](https://github.com/tu-usuario/siiha_backend/issues) en el repositorio o contáctame directamente en [email](mailto:tu-email@example.com).
-
----

@@ -1,5 +1,14 @@
 /* eslint-disable prettier/prettier */
+// src/grupos/dto/create-grupo.dto.ts
+
+import { IsString, IsInt, IsNotEmpty } from 'class-validator';
+
 export class CreateGrupoDto {
-  nombre_grupo?: string;
-  docente_id_docente?: number;
+  @IsString()
+  @IsNotEmpty()
+  nombre_grupo: string;
+
+  @IsInt()
+  @IsNotEmpty()
+  docente_id_docente: number;
 }

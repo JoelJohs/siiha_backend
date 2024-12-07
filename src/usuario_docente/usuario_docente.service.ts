@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UsuarioDocente } from './usuario_docente.entity';
 import { CreateUsuarioDocenteDto } from './dto/create-usuario-docente.dto';
+import { UpdateUsuarioDocenteDto } from './dto/update-usuario-docente.dto';
 
 @Injectable()
 export class UsuarioDocenteService {
@@ -12,14 +13,120 @@ export class UsuarioDocenteService {
     private userDocenteRepository: Repository<UsuarioDocente>,
   ) {}
 
-  createUserDocente(
-    userDocente: CreateUsuarioDocenteDto,
+  // **Create Usuario Docente**
+  async createUserDocente(
+    createUsuarioDocenteDto: CreateUsuarioDocenteDto,
   ): Promise<UsuarioDocente> {
-    const newUserDocente = this.userDocenteRepository.create(userDocente);
-    return this.userDocenteRepository.save(newUserDocente);
+    try {
+      const newUserDocente = this.userDocenteRepository.create(
+        createUsuarioDocenteDto,
+      );
+      return await this.userDocenteRepository.save(newUserDocente);
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new HttpException(
+          'El usuario docente ya existe',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException(
+        'Error al crear el usuario docente',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  getUserDocente() {
-    return this.userDocenteRepository.find();
+  // **Get Usuarios Docentes**
+  async getUserDocente(): Promise<UsuarioDocente[]> {
+    try {
+      return await this.userDocenteRepository.find({
+        relations: ['docente', 'grupos'],
+      });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Error al obtener los usuarios docentes',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // **Get Usuario Docente por ID**
+  async getUserDocenteById(id: number): Promise<UsuarioDocente> {
+    try {
+      const userDocente = await this.userDocenteRepository.findOne({
+        where: { id_usuario: id },
+        relations: ['docente', 'grupos'],
+      });
+
+      if (!userDocente) {
+        throw new HttpException(
+          'Usuario docente no encontrado',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return userDocente;
+    } catch (error) {
+      if (error.status && error.message) {
+        throw error;
+      }
+      throw new HttpException(
+        'Error al obtener el usuario docente',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // **Update Usuario Docente**
+  async updateUserDocente(
+    id: number,
+    updateUsuarioDocenteDto: UpdateUsuarioDocenteDto,
+  ): Promise<UsuarioDocente> {
+    try {
+      const userDocente = await this.userDocenteRepository.preload({
+        id_usuario: id,
+        ...updateUsuarioDocenteDto,
+      });
+
+      if (!userDocente) {
+        throw new HttpException(
+          'Usuario docente no encontrado',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return await this.userDocenteRepository.save(userDocente);
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new HttpException(
+          'El username ya está en uso',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException(
+        'Error al actualizar el usuario docente',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // **Delete Usuario Docente**
+  async deleteUserDocente(id: number): Promise<void> {
+    try {
+      const result = await this.userDocenteRepository.delete(id);
+      if (result.affected === 0) {
+        throw new HttpException(
+          'Usuario docente no encontrado',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Error al eliminar el usuario docente',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
