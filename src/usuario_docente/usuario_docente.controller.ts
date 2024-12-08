@@ -68,6 +68,46 @@ export class UsuarioDocenteController {
     }
   }
 
+  // **GET** Usuario Docente por Nombre de Usuario
+  // URL: http://localhost:3000/usuario-docente/username/:username
+  @Get('username/:username')
+  async getUserDocenteByUsername(
+    @Param('username') username: string,
+  ): Promise<UsuarioDocente> {
+    try {
+      return await this.usuarioDocenteService.getUserDocenteByUsername(
+        username,
+      );
+    } catch (error) {
+      if (error.status && error.message) {
+        throw error;
+      }
+      throw new HttpException(
+        'Error al obtener el usuario docente por nombre de usuario',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // **GET** Usuario Docente por Email
+  // URL: http://localhost:3000/usuario-docente/email/:email
+  @Get('email/:email')
+  async getUserDocenteByEmail(
+    @Param('email') email: string,
+  ): Promise<UsuarioDocente> {
+    try {
+      return await this.usuarioDocenteService.getUserDocenteByEmail(email);
+    } catch (error) {
+      if (error.status && error.message) {
+        throw error;
+      }
+      throw new HttpException(
+        'Error al obtener el usuario docente por email',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   // **PATCH**
   // URL: http://localhost:3000/usuario-docente/1
   @Patch(':id')

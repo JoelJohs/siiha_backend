@@ -14,6 +14,22 @@ export class UsuariosService {
     private userPadreRepository: Repository<UsuarioPadre>,
   ) {}
 
+  // **Validate Password**
+  async validatePassword(
+    storedPassword: string,
+    inputPassword: string,
+  ): Promise<boolean> {
+    try {
+      return storedPassword === inputPassword;
+    } catch (error) {
+      console.error('Error al validar la contraseña', error);
+      throw new HttpException(
+        'Error al validar la contraseña',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   // **Create UsuarioPadre**
   async createUserPadre(
     userPadre: CreateUsuarioPadreDto,
@@ -58,6 +74,54 @@ export class UsuariosService {
       console.error(error);
       throw new HttpException(
         'Error al obtener los usuarios',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  //**Get UsuarioPadre By Username */
+  async getUserPadreByUsername(username: string): Promise<UsuarioPadre> {
+    try {
+      const userFound = await this.userPadreRepository.findOne({
+        where: { nombre_usuario: username },
+        relations: ['padre_tutor', 'alumnoUsuarioPadres', 'tutorHasPagos'],
+      });
+
+      if (!userFound) {
+        throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
+      }
+
+      return userFound;
+    } catch (error) {
+      if (error.status && error.message) {
+        throw error;
+      }
+      throw new HttpException(
+        'Error al obtener el usuario',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  //** Get UsuarioPadre by email */
+  async getUserPadreByEmail(email: string): Promise<UsuarioPadre> {
+    try {
+      const userFound = await this.userPadreRepository.findOne({
+        where: { email: email },
+        relations: ['padre_tutor', 'alumnoUsuarioPadres', 'tutorHasPagos'],
+      });
+
+      if (!userFound) {
+        throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
+      }
+
+      return userFound;
+    } catch (error) {
+      if (error.status && error.message) {
+        throw error;
+      }
+      throw new HttpException(
+        'Error al obtener el usuario',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

@@ -13,6 +13,22 @@ export class UsuarioDocenteService {
     private userDocenteRepository: Repository<UsuarioDocente>,
   ) {}
 
+  // **Validate Password**
+  async validatePassword(
+    storedPassword: string,
+    inputPassword: string,
+  ): Promise<boolean> {
+    try {
+      return storedPassword === inputPassword;
+    } catch (error) {
+      console.error('Error al validar la contraseña', error);
+      throw new HttpException(
+        'Error al validar la contraseña',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   // **Create Usuario Docente**
   async createUserDocente(
     createUsuarioDocenteDto: CreateUsuarioDocenteDto,
@@ -73,6 +89,60 @@ export class UsuarioDocenteService {
       }
       throw new HttpException(
         'Error al obtener el usuario docente',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // **Get Usuario Docente por Nombre de Usuario**
+  async getUserDocenteByUsername(username: string): Promise<UsuarioDocente> {
+    try {
+      const userDocente = await this.userDocenteRepository.findOne({
+        where: { nombre_usuario: username },
+        relations: ['docente', 'grupos'],
+      });
+
+      if (!userDocente) {
+        throw new HttpException(
+          'Usuario docente no encontrado',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return userDocente;
+    } catch (error) {
+      if (error.status && error.message) {
+        throw error;
+      }
+      throw new HttpException(
+        'Error al obtener el usuario docente por nombre de usuario',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // **Get Usuario Docente por Email**
+  async getUserDocenteByEmail(email: string): Promise<UsuarioDocente> {
+    try {
+      const userDocente = await this.userDocenteRepository.findOne({
+        where: { email: email },
+        relations: ['docente', 'grupos'],
+      });
+
+      if (!userDocente) {
+        throw new HttpException(
+          'Usuario docente no encontrado',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return userDocente;
+    } catch (error) {
+      if (error.status && error.message) {
+        throw error;
+      }
+      throw new HttpException(
+        'Error al obtener el usuario docente por email',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-// src/usuario_docente/dto/create-usuario-docente.dto.ts
+// src/auth/dto/registerDocente.dto.ts
 
 import {
   IsString,
@@ -11,9 +11,9 @@ import {
   IsEmail,
 } from 'class-validator';
 
-export class CreateUsuarioDocenteDto {
+export class RegisterDocenteDto {
   @IsString()
-  @IsNotEmpty({ message: 'El username es obligatorio' })
+  @IsNotEmpty({ message: 'El nombre de usuario es obligatorio' })
   nombre_usuario: string;
 
   @IsString()
@@ -29,6 +29,10 @@ export class CreateUsuarioDocenteDto {
   docente_id: number;
 
   @IsOptional()
-  @IsEnum(['D', 'A'], { message: 'El rol debe ser D o A' })
+  @IsEnum(['D', 'A'], { message: 'El rol debe ser "D" o "A"' })
   rol?: 'D' | 'A' = 'D';
+
+  // @IsEmail({}, { message: 'El email debe ser válido' })
+  // @IsNotEmpty({ message: 'El email es obligatorio' })
+  // email?: string;
 }

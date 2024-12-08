@@ -8,5 +8,6 @@ import { UsuarioDocente } from './usuario_docente.entity';
   imports: [TypeOrmModule.forFeature([UsuarioDocente])],
   providers: [UsuarioDocenteService],
   controllers: [UsuarioDocenteController],
+  exports: [UsuarioDocenteService],
 })
 export class UsuarioDocenteModule {}

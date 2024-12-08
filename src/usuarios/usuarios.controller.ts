@@ -38,7 +38,9 @@ export class UsuariosController {
 
   // URL: http://localhost:3000/usuarios/:id
   @Get(':id')
-  async getUsuario(@Param('id', ParseIntPipe) id: number): Promise<UsuarioPadre> {
+  async getUsuario(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<UsuarioPadre> {
     try {
       return await this.usuariosService.getUserPadreById(id);
     } catch (error) {
@@ -52,10 +54,50 @@ export class UsuariosController {
     }
   }
 
+  // **GET** usuario por nombre de usuario
+  // URL: http://localhost:3000/usuarios/username/:username
+  @Get('username/:username')
+  async getUsuarioByUsername(
+    @Param('username') username: string,
+  ): Promise<UsuarioPadre> {
+    try {
+      return await this.usuariosService.getUserPadreByUsername(username);
+    } catch (error) {
+      if (error.status && error.message) {
+        throw error;
+      }
+      throw new HttpException(
+        'Error al obtener el usuario por nombre de usuario',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // **GET** usuario por email
+  // URL: http://localhost:3000/usuarios/email/:email
+  @Get('email/:email')
+  async getUsuarioByEmail(
+    @Param('email') email: string,
+  ): Promise<UsuarioPadre> {
+    try {
+      return await this.usuariosService.getUserPadreByEmail(email);
+    } catch (error) {
+      if (error.status && error.message) {
+        throw error;
+      }
+      throw new HttpException(
+        'Error al obtener el usuario por email',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   // **POST**
   // URL: http://localhost:3000/usuarios
   @Post()
-  async createUsuario(@Body() newUser: CreateUsuarioPadreDto): Promise<UsuarioPadre> {
+  async createUsuario(
+    @Body() newUser: CreateUsuarioPadreDto,
+  ): Promise<UsuarioPadre> {
     try {
       return await this.usuariosService.createUserPadre(newUser);
     } catch (error) {
@@ -77,7 +119,10 @@ export class UsuariosController {
     @Body() updateUser: UpdateUsuarioPadreDto,
   ): Promise<UsuarioPadre> {
     try {
-      const updatedUsuario = await this.usuariosService.updateUserPadre(id, updateUser);
+      const updatedUsuario = await this.usuariosService.updateUserPadre(
+        id,
+        updateUser,
+      );
       if (!updatedUsuario) {
         throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
       }

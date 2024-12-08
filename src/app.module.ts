@@ -13,6 +13,7 @@ import { UsuarioDocenteModule } from './usuario_docente/usuario_docente.module';
 import { PadreTutorHasPagosModule } from './padre_tutor_has_pagos/padre_tutor_has_pagos.module';
 import { AlumnosPadresModule } from './alumnos_padres/alumnos_padres.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     UsuarioDocenteModule,
     PadreTutorHasPagosModule,
     AlumnosPadresModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
