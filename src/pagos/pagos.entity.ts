@@ -19,6 +19,9 @@ export class Pago {
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   cantidad: number;
 
+  @Column({ type: 'text', nullable: true })
+  descripcion: string;
+
   @CreateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   fecha_creacion: Date;
 
